@@ -1,10 +1,13 @@
 import express from 'express'
-import winston from 'winston'
+import { inbox } from './routes'
+//import rdf from './middlewares/rdf'
 
 const app = express()
 
-app.get('/', (req, res) => {
-  res.send('Hello World!')
-})
+app
+  .get('/', (req, res) => {
+    res.send('Hello World!')
+  })
+  .use('/inbox', inbox)
 
 export default app
