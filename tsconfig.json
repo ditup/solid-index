@@ -1,12 +1,15 @@
 {
+  "compileOnSave": true,
   "compilerOptions": {
     "target": "es2016",
     "module": "commonjs",
     "outDir": "dist",
     "strict": true,
     "esModuleInterop": true,
-    "inlineSourceMap": true,
-    "baseUrl": "./"
+    "sourceMap": true,
+    "baseUrl": "./",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
   },
   "include": ["src/**/*.ts"],
   "exclude": ["src/**/*.test.ts"]
