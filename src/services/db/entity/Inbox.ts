@@ -1,5 +1,5 @@
 import { Uri } from 'src/types'
-import { Column, Entity, PrimaryColumn } from 'typeorm'
+import { Column, Entity, Index, PrimaryColumn } from 'typeorm'
 
 @Entity()
 export class Inbox {
@@ -9,6 +9,7 @@ export class Inbox {
   @Column()
   sender!: Uri
 
+  @Index()
   @Column({ type: 'timestamp' })
   suggestedAt!: number
 }

@@ -1,10 +1,10 @@
 import {
   afterAll,
+  afterEach,
   beforeAll,
   describe,
   expect,
   it,
-  afterEach,
 } from '@jest/globals'
 import request from 'supertest'
 import app from './app'

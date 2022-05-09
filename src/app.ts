@@ -1,3 +1,4 @@
+import cors from 'cors'
 import express from 'express'
 import { inbox } from './routes'
 //import rdf from './middlewares/rdf'
@@ -5,6 +6,7 @@ import { inbox } from './routes'
 const app = express()
 
 app
+  .use(cors())
   .get('/', (req, res) => {
     res.send('Hello World!')
   })

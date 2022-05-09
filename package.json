@@ -6,19 +6,22 @@
   "scripts": {
     "start": "tsc && NODE_ENV=dev node --unhandled-rejections=strict ./dist/index.js",
     "debug": "export DEBUG=* && yarn start",
-    "test": "jest",
+    "test": "jest --runInBand",
     "format": "prettier '**/*.{ts,json}' --write",
     "lint": "eslint . --ext .ts",
     "typeorm": "typeorm-ts-node-commonjs",
     "migrate": "yarn typeorm migration:run -d src/services/db/data-source.ts"
   },
   "dependencies": {
+    "@inrupt/solid-client": "^1.22.0",
     "cors": "^2.8.5",
     "debug": "^4.3.4",
     "dotenv": "^16.0.0",
     "express": "^4.18.0",
     "express-winston": "^4.2.0",
+    "lodash.intersection": "^4.4.0",
     "mysql": "^2.18.1",
+    "rdf-namespaces": "^1.9.2",
     "rdf-parse": "^2.0.0",
     "typeorm": "^0.3.6",
     "winston": "^3.7.2"
@@ -27,6 +30,7 @@
     "@types/cors": "^2.8.12",
     "@types/debug": "^4.1.7",
     "@types/express": "^4.17.13",
+    "@types/lodash.intersection": "^4.4.7",
     "@types/supertest": "^2.0.12",
     "@typescript-eslint/eslint-plugin": "^5.21.0",
     "@typescript-eslint/parser": "^5.21.0",

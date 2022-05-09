@@ -1,7 +1,12 @@
 import { Uri } from 'src/types'
-import { Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm'
-import { RDFObject } from './RDFObject'
-import { RDFPredicate } from './RDFPredicate'
+import {
+  CreateDateColumn,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+  PrimaryColumn,
+} from 'typeorm'
 import { RDFSubject } from './RDFSubject'
 
 @Entity()
@@ -12,21 +17,27 @@ export class Triple {
     onUpdate: 'CASCADE',
   })
   @JoinColumn({ name: 'subject' })
+  @Index()
   subject!: Uri
 
   @PrimaryColumn()
-  @ManyToOne(() => RDFPredicate, predicate => predicate.uri, {
+  /*@ManyToOne(() => RDFPredicate, predicate => predicate.uri, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })
-  @JoinColumn({ name: 'predicate' })
+  @JoinColumn({ name: 'predicate' })//*/
+  @Index()
   predicate!: Uri
 
   @PrimaryColumn()
-  @ManyToOne(() => RDFObject, object => object.uri, {
+  /*@ManyToOne(() => RDFObject, object => object.uri, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })
-  @JoinColumn({ name: 'object' })
+  @JoinColumn({ name: 'object' })//*/
+  @Index()
   object!: Uri
+
+  @CreateDateColumn({ type: 'timestamp' })
+  createdAt!: number
 }
