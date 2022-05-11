@@ -1,6 +1,6 @@
 import { getSolidDataset, getThing, getUrlAll } from '@inrupt/solid-client'
 import intersection from 'lodash.intersection'
-import { as, foaf, rdf } from 'rdf-namespaces'
+import { as, dct, foaf, rdf } from 'rdf-namespaces'
 import { removeSubject, saveTriples } from '../services/db'
 import AppDataSource from '../services/db/data-source'
 import { Inbox } from '../services/db/entity/Inbox'
@@ -21,10 +21,16 @@ const processInbox = async () => {
   try {
     // fetch the related document
     // i'd really prefer to use a different library
+    const isSender = item.subject === item.sender
+
     const dataset = await getSolidDataset(item.subject)
     const thing = getThing(dataset, item.subject)
     let foundTriples: [Uri, Uri, Uri][] = []
     if (thing) {
+      // find thing's creators
+      const creators = getUrlAll(thing, dct.creator)
+      if (!(isSender || creators.includes(item.sender)))
+        throw new Error("sender doesn't own this")
       // find interesting relationships
       const types = getUrlAll(thing, rdf.type)
       if (types.includes(foaf.Person)) {

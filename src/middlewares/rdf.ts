@@ -1,7 +1,6 @@
 // unfinished
 
 import type { NextFunction, Request, Response } from 'express'
-import rdfParser from 'rdf-parse'
 
 export type ContentType = 'trig' | 'jsonld' | 'turtle'
 

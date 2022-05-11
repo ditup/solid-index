@@ -109,6 +109,11 @@ This project is in an early alpha state. Use at your own risk.
 
 We run it [in production](https://index.ditup.org/inbox), with [LDF server](https://index.ditup.org/ldf) serving the data, with pm2 and Nginx. Documentation shall be added.
 
+### Notes to self
+
+- you need to authenticate
+- to authenticate, the profile needs to contain `me: solid:oidcIssuer <issuer url e.g. https://solidcommunity.net>.`
+
 ## License
 
 [MIT](./LICENSE)

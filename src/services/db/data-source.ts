@@ -13,7 +13,7 @@ const AppDataSource = new DataSource({
   synchronize: true, // development and testing only
   migrations: [path.resolve('./services/db/migration') + '/**/*.ts'],
   migrationsTableName: 'migration',
-  logging: process.env.NODE_ENV === 'test',
+  logging: false, //process.env.NODE_ENV === 'test',
 })
 
 export default AppDataSource

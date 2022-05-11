@@ -6,6 +6,7 @@ import { inbox } from './routes'
 const app = express()
 
 app
+  .enable('trust proxy')
   .use(cors())
   .get('/', (req, res) => {
     res.send('Hello World!')

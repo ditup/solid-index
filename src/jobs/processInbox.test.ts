@@ -1,96 +1,167 @@
 import {
-  afterAll,
   afterEach,
-  beforeAll,
   beforeEach,
   describe,
   expect,
   it,
   jest,
 } from '@jest/globals'
+import * as fetch from 'cross-fetch'
 import type { MockedFunctionDeep } from 'jest-mock'
-import request from 'supertest'
-import app from '../app'
+import { as, dct } from 'rdf-namespaces'
 import AppDataSource from '../services/db/data-source'
+import { Triple } from '../services/db/entity/Triple'
+import {
+  prepareDatabase,
+  sendNotification,
+  signInAs,
+  signOut,
+} from '../test-utilities'
 import type { Uri } from '../types'
 import processInbox from './processInbox'
-import * as fetch from 'cross-fetch'
-import { MetadataAlreadyExistsError } from 'typeorm'
 
 jest.mock('cross-fetch')
 
 type MockedFetch = MockedFunctionDeep<typeof fetch.default>
 
-beforeAll(() => AppDataSource.initialize())
-afterAll(() => AppDataSource.destroy())
-afterEach(async () => {
-  const entities = AppDataSource.entityMetadatas
-
-  for (const entity of entities) {
-    //await AppDataSource.getRepository(entity.name).clear()
-    await AppDataSource.getRepository(entity.name).query(
-      `DELETE FROM ${entity.tableName}`,
-    )
-  }
-})
-
-const sendNotification = async ({ subject }: { subject: Uri }) => {
-  return await request(app)
-    .post('/inbox')
-    .set(
-      'content-type',
-      'application/ld+json;profile="https://www.w3.org/ns/activitystreams"',
-    )
-    .send({
-      '@context': 'https://www.w3.org/ns/activitystreams',
-      '@id': '',
-      '@type': 'Announce',
-      actor: 'https://solididentity.example#me',
-      object: subject,
-    })
-}
+prepareDatabase()
 
 const wait = (n: number) =>
   new Promise(resolve => {
     setTimeout(resolve, n)
   })
 
-describe.only('process inbox, save triples to database', () => {
-  beforeEach(() => {
-    ;(fetch.default as MockedFetch).mockResolvedValue({
-      headers: new Headers({ 'content-type': 'text/turtle' }),
-      text: async () => `
+const person1 = 'https://actor1.example/profile/card#me'
+const person2 = 'https://actor2.example/profile/card#me'
+const person3 = 'https://actor3.example/profile/card#me'
+
+const prepareFetchProfileOf = (person: Uri) =>
+  (fetch.default as MockedFetch).mockResolvedValue({
+    headers: new Headers({
+      'content-type': 'text/turtle',
+      'WAC-Allow': 'user="read write append",public="read"',
+    }),
+    text: async () => `
       @prefix foaf: <http://xmlns.com/foaf/0.1/>.
       @prefix wd: <http://www.wikidata.org/entity/>.
-      <https://mrkvon.solidcommunity.net/profile/card#me> a foaf:Person;
+      <${person}> a foaf:Person;
       foaf:topic_interest wd:Q42, wd:Q1, wd:Q100.
       `,
-      status: 200,
-      statusText: 'OK',
-      ok: true,
-    } as Response)
+    status: 200,
+    statusText: 'OK',
+    ok: true,
+  } as Response)
+
+const prepareFetchThingOf = (thing: Uri, person: Uri) =>
+  (fetch.default as MockedFetch).mockResolvedValue({
+    headers: new Headers({
+      'content-type': 'text/turtle',
+      'WAC-Allow': 'user="read write append",public="read"',
+    }),
+    text: async () => `
+      @prefix wd: <http://www.wikidata.org/entity/>.
+      @prefix ditup: <https://ditup.example#>.
+      <${thing}> a ditup:Idea;
+      <${dct.creator}> <${person}>;
+      <${as.tag}> wd:Q42, wd:Q1, wd:Q100.
+      `,
+    status: 200,
+    statusText: 'OK',
+    ok: true,
+  } as Response)
+
+describe('process inbox, save triples to database', () => {
+  beforeEach(() => {
+    signInAs()
   })
 
-  it.only('should save interesting triples to database', async () => {
+  afterEach(signOut)
+
+  it('[person] should save interesting triples to database', async () => {
     //* get the notification
+    signInAs(person1, true)
     const response = await sendNotification({
-      subject: 'https://mrkvon.solidcommunity.net/profile/card#me',
+      subject: person1,
+      actor: person1,
     })
+
     await wait(1000)
-    expect(response.statusCode).toBe(202)
+
+    signInAs(person2, true)
     const response2 = await sendNotification({
-      subject: 'https://vcxy.solidcommunity.net/profile/card#me',
+      subject: person2,
+      actor: person2,
     })
-    await wait(1000)
     expect(response2.statusCode).toBe(202)
+
+    await wait(1000)
+
+    signInAs(person3, true)
     const response3 = await sendNotification({
-      subject: 'https://mrkvon.inrupt.net/profile/card#me',
+      subject: person3,
+      actor: person3,
     })
     expect(response3.statusCode).toBe(202)
+
     //*/
     // execute the search
+    prepareFetchProfileOf(person1)
     await processInbox()
-    throw 'process'
+    const items = await AppDataSource.manager.find(Triple, {})
+
+    expect(items.length).toBe(3)
+  })
+
+  it('should not save persons who were not provided by themselves', async () => {
+    signInAs(person2, true)
+    const response = await sendNotification({
+      subject: person1,
+      actor: person2,
+    })
+
+    expect(response.status).toBe(202)
+
+    prepareFetchProfileOf(person1)
+    await processInbox()
+
+    const items = await AppDataSource.manager.find(Triple, {})
+    expect(items.length).toBe(0)
+  })
+
+  const thing1 = 'https://thing.example#1'
+  const thing2 = 'https://thing2.example#2'
+  it('[thing] should save interesting triples to database', async () => {
+    //* get the notification
+    signInAs(person1, true)
+    const response = await sendNotification({
+      subject: thing1,
+      actor: person1,
+    })
+
+    //*/
+    // execute the search
+    prepareFetchThingOf(thing1, person1)
+    await processInbox()
+    const items = await AppDataSource.manager.find(Triple, {})
+
+    expect(items.length).toBe(3)
+  })
+
+  it('[thing, but actor is not creator] should not save triples to database', async () => {
+    //* get the notification
+    signInAs(person1, true)
+    const response = await sendNotification({
+      subject: thing1,
+      actor: person1,
+    })
+
+    //*/
+    // execute the search
+    prepareFetchThingOf(thing1, person2)
+    await processInbox()
+    const items = await AppDataSource.manager.find(Triple, {})
+
+    expect(items.length).toBe(0)
   })
 
   it.skip('should delete the processed record', () => {})

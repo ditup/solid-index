@@ -1,4 +1,5 @@
 import { json, Router } from 'express'
+import { solidAuth } from '../solid-auth'
 import { addSubject } from '../services/db'
 
 const router = Router()
@@ -10,9 +11,16 @@ router
     }),
   )
   .route('/')
-  .post(async (req, res, next) => {
+  .post(solidAuth, async (req, res, next) => {
     try {
-      await addSubject({ subject: req.body.object, sender: req.body.actor })
+      const sender = req.body.actor
+      if (sender !== res.locals.user)
+        return res
+          .status(403)
+          .send(
+            `You have to be authenticated as actor.\nActor: ${sender}\nAuthenticated: ${res.locals.user}`,
+          )
+      await addSubject({ subject: req.body.object, sender })
       res.status(202).end()
     } catch (error) {
       console.log(error)

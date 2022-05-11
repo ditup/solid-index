@@ -1,8 +1,6 @@
 import type { Uri } from '../../types'
 import AppDataSource from './data-source'
 import { Inbox } from './entity/Inbox'
-import { RDFObject } from './entity/RDFObject'
-import { RDFPredicate } from './entity/RDFPredicate'
 import { RDFSubject } from './entity/RDFSubject'
 import { Triple } from './entity/Triple'
 

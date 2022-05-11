@@ -887,6 +887,17 @@
   dependencies:
     "@sinonjs/commons" "^1.7.0"
 
+"@solid/access-token-verifier@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@solid/access-token-verifier/-/access-token-verifier-2.0.0.tgz#a2d182c5eef2be872c980fb8f9182a401d92df36"
+  integrity sha512-KW+lRj384Z1Cvff1UrPVz2g2usmuM44QuAsDoXSV1GI8jv+6/vLWBpGK8igt7Ac2D/24d+Ksq5yj2IvqxXojsA==
+  dependencies:
+    jose "^4.7.0"
+    lru-cache "^6.0.0"
+    n3 "^1.16.1"
+    node-fetch "^2.6.7"
+    ts-guards "^0.5.1"
+
 "@sqltools/formatter@^1.2.2":
   version "1.2.3"
   resolved "https://registry.yarnpkg.com/@sqltools/formatter/-/formatter-1.2.3.tgz#1185726610acc37317ddab11c3c7f9066966bd20"
@@ -3021,6 +3032,11 @@ jest@^28.0.2:
     import-local "^3.0.2"
     jest-cli "^28.0.2"
 
+jose@^4.7.0:
+  version "4.8.1"
+  resolved "https://registry.yarnpkg.com/jose/-/jose-4.8.1.tgz#dc7c2660b115ba29b44880e588c5ac313c158247"
+  integrity sha512-+/hpTbRcCw9YC0TOfN1W47pej4a9lRmltdOVdRLz5FP5UvUq3CenhXjQK7u/8NdMIIShMXYAh9VLPhc7TjhvFw==
+
 js-tokens@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/js-tokens/-/js-tokens-4.0.0.tgz#19203fb59991df98e3a287050d4647cdeaf32499"
@@ -3337,7 +3353,7 @@ mz@^2.4.0:
     object-assign "^4.0.1"
     thenify-all "^1.0.0"
 
-n3@^1.10.0, n3@^1.6.3:
+n3@^1.10.0, n3@^1.16.1, n3@^1.6.3:
   version "1.16.1"
   resolved "https://registry.yarnpkg.com/n3/-/n3-1.16.1.tgz#355f0b4676df1e3ef4bbaf331c078f3bf1098f32"
   integrity sha512-XhCtfs9pR8TRydTRHdy7arkeJlLB2NscJix6NMe4eP+3RLWv7bxusECt2gNmmRGKvII5j+Pzl+Fx8Ny0NX3UNg==
@@ -3355,7 +3371,7 @@ negotiator@0.6.3:
   resolved "https://registry.yarnpkg.com/negotiator/-/negotiator-0.6.3.tgz#58e323a72fedc0d6f9cd4d31fe49f51479590ccd"
   integrity sha512-+EUsqGPLsM+j/zdChZjsnX51g4XrHFOIXwfnCVPGlQk/k5giakcKsuxCObBRu6DSm9opw/O6slWbJdghQM4bBg==
 
-node-fetch@2.6.7:
+node-fetch@2.6.7, node-fetch@^2.6.7:
   version "2.6.7"
   resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.7.tgz#24de9fba827e3b4ae44dc8b20256a379160052ad"
   integrity sha512-ZjMPFEfVx5j+y2yF35Kzx5sF7kDzxuDj6ziH4FFbOp87zKDZNx8yExJIb05OGF4Nlt9IHFIMBkRl41VdvcNdbQ==
@@ -4249,6 +4265,11 @@ triple-beam@^1.3.0:
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/triple-beam/-/triple-beam-1.3.0.tgz#a595214c7298db8339eeeee083e4d10bd8cb8dd9"
   integrity sha512-XrHUvV5HpdLmIj4uVMxHggLbFSZYIn7HEWsqePZcI50pco+MPqJ50wMGY794X7AOOhxOBAjbkqfAbEe/QMp2Lw==
+
+ts-guards@^0.5.1:
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/ts-guards/-/ts-guards-0.5.1.tgz#10241ce5203cfeeba4709f48dca5ea6907b17e55"
+  integrity sha512-Y6P/VJnwARiPMfxO7rvaYaz5tGQ5TQ0Wnb2cWIxMpFOioYkhsT8XaCrJX6wYPNFACa4UOrN5SPqhwpM8NolAhQ==
 
 ts-jest@^28.0.0-next.2:
   version "28.0.0-next.2"

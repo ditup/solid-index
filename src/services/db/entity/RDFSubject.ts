@@ -1,6 +1,5 @@
 import { Uri } from 'src/types'
 import {
-  Column,
   CreateDateColumn,
   Entity,
   PrimaryColumn,
