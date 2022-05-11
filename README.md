@@ -83,21 +83,27 @@ and body
 {
   "@context": "https://www.w3.org/ns/activitystreams",
   "@id": "",
-  "@type": "Announce",
+  "@type": "Announce", // or "Remove"
   "actor": "[your Solid identity uri]",
   "object": "[(Person) or (Dit)]***"
 }
 ```
 
+The request must also be authenticated with a Solid identity, perhaps using `fetch` from @inrupt/solid-client-authn-browser library
+
+To succeed with authentication, you must have the following triple in your profile document: `<you> solid:oidcIssuer <your_issuer>`, e.g. `<https://test.solidcommunity.net/profile/card#me> solid:oidcIssuer <https://solidcommunity.net>.`, and the index server must be able to find it (it must be public).
+
 _\*\*\* (Person) or (Dit) should be your Solid identity uri, or uri of something you created and wish to add to the index_
 
 (This request tries to follow [Linked Data Notifications](https://www.w3.org/TR/ldn/#sender) specification, but does so only lousily at this point.)
 
-If all goes well, you should receive response `202 Accepted`. That means that your desire to index `object` has been saved, and it will soon be processed and become discoverable.
+If all goes well, you should receive response `202 Accepted`. That means that your desire to index (or unindex) `object` has been saved, and it will soon be processed and become (or stop being) discoverable.
 
 This index only processes profiles and items that are public.
 
-_In the future, it will be possible to withdraw profiles and things from the index, however it doesn't work now. (We'll need to include Solid-OIDC authentication for that.)_
+~~_In the future, it will be possible to withdraw profiles and things from the index, however it doesn't work now. (We'll need to include Solid-OIDC authentication for that.)_~~
+
+Currently, people can both add and remove themselves and their stuff.
 
 ### Configure LDF server
 

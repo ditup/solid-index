@@ -11,6 +11,7 @@ import type { MockedFunctionDeep } from 'jest-mock'
 import { as, dct } from 'rdf-namespaces'
 import AppDataSource from '../services/db/data-source'
 import { Triple } from '../services/db/entity/Triple'
+import { RDFSubject } from '../services/db/entity/RDFSubject'
 import {
   prepareDatabase,
   sendNotification,
@@ -158,6 +159,42 @@ describe('process inbox, save triples to database', () => {
     //*/
     // execute the search
     prepareFetchThingOf(thing1, person2)
+    await processInbox()
+    const items = await AppDataSource.manager.find(Triple, {})
+
+    expect(items.length).toBe(0)
+  })
+
+  it('should remove all related triples if action is "remove"', async () => {
+    // first announce the thing to index
+    signInAs(person1, true)
+    await sendNotification({
+      subject: thing1,
+      actor: person1,
+      action: 'add',
+    })
+    // process it
+    prepareFetchThingOf(thing1, person1)
+    await processInbox()
+    // and see that it was saved
+    const itemsAfterAdd = await AppDataSource.manager.find(Triple, {})
+    expect(itemsAfterAdd.length).toBe(3)
+    const subjectsAfterAdd = await AppDataSource.manager.find(RDFSubject, {})
+    expect(subjectsAfterAdd.length).toBe(1)
+    expect(subjectsAfterAdd[0]).toMatchObject({
+      uri: thing1,
+    })
+
+    // then request removal
+    signInAs(person1, true)
+    await sendNotification({
+      subject: thing1,
+      actor: person1,
+      action: 'remove',
+    })
+
+    // process it
+    prepareFetchThingOf(thing1, person1)
     await processInbox()
     const items = await AppDataSource.manager.find(Triple, {})
 

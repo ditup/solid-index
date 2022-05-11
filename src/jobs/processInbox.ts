@@ -1,7 +1,7 @@
 import { getSolidDataset, getThing, getUrlAll } from '@inrupt/solid-client'
 import intersection from 'lodash.intersection'
 import { as, dct, foaf, rdf } from 'rdf-namespaces'
-import { removeSubject, saveTriples } from '../services/db'
+import { removeRDFSubject, removeSubject, saveTriples } from '../services/db'
 import AppDataSource from '../services/db/data-source'
 import { Inbox } from '../services/db/entity/Inbox'
 import { Uri } from '../types'
@@ -31,6 +31,7 @@ const processInbox = async () => {
       const creators = getUrlAll(thing, dct.creator)
       if (!(isSender || creators.includes(item.sender)))
         throw new Error("sender doesn't own this")
+
       // find interesting relationships
       const types = getUrlAll(thing, rdf.type)
       if (types.includes(foaf.Person)) {
@@ -46,9 +47,13 @@ const processInbox = async () => {
         )
       }
     }
-    // save the interesting relationships
-    console.log(foundTriples)
-    await saveTriples(foundTriples)
+    // if action is "remove" or subject was not found, delete the subject, and all triples with it
+    if (item.action === 'remove' || !thing) {
+      await removeRDFSubject(item.subject)
+    } else {
+      // save the interesting relationships
+      await saveTriples(foundTriples)
+    }
   } catch (e) {
     console.log(e)
   } finally {

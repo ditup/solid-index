@@ -20,7 +20,17 @@ router
           .send(
             `You have to be authenticated as actor.\nActor: ${sender}\nAuthenticated: ${res.locals.user}`,
           )
-      await addSubject({ subject: req.body.object, sender })
+      const action =
+        req.body['@type'] === 'Announce'
+          ? 'add'
+          : req.body['@type'] === 'Remove'
+          ? 'remove'
+          : ''
+      if (!action)
+        throw new Error(
+          `Unsupported Activity. Received ${req.body['@type']}. Expected 'Announce' or 'Remove'`,
+        )
+      await addSubject({ subject: req.body.object, sender, action })
       res.status(202).end()
     } catch (error) {
       console.log(error)

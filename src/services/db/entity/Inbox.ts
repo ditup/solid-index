@@ -9,6 +9,12 @@ export class Inbox {
   @Column()
   sender!: Uri
 
+  @PrimaryColumn({
+    type: 'enum',
+    enum: ['add', 'remove'],
+  })
+  action!: 'add' | 'remove'
+
   @Index()
   @Column({ type: 'timestamp' })
   suggestedAt!: number

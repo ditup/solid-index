@@ -7,9 +7,11 @@ import { Triple } from './entity/Triple'
 export const addSubject = async ({
   subject,
   sender,
+  action,
 }: {
   subject: Uri
   sender: Uri
+  action: 'add' | 'remove'
 }) => {
   await AppDataSource.createQueryBuilder()
     .insert()
@@ -18,6 +20,7 @@ export const addSubject = async ({
     .values({
       subject,
       sender,
+      action,
     })
     .execute()
 }
@@ -27,6 +30,14 @@ export const removeSubject = async (uri: Uri) => {
     .delete()
     .from(Inbox)
     .where('subject = :uri', { uri })
+    .execute()
+}
+
+export const removeRDFSubject = async (uri: Uri) => {
+  await AppDataSource.createQueryBuilder()
+    .delete()
+    .from(RDFSubject)
+    .where('uri = :uri', { uri })
     .execute()
 }
 

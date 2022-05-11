@@ -1,18 +1,20 @@
-import { Uri } from './types'
+import { afterAll, afterEach, beforeAll, jest } from '@jest/globals'
+import * as verifier from '@solid/access-token-verifier'
 import request from 'supertest'
 import app from './app'
-import { jest, beforeAll, afterAll, afterEach } from '@jest/globals'
-import * as verifier from '@solid/access-token-verifier'
 import AppDataSource from './services/db/data-source'
+import { Uri } from './types'
 
 export const defaultActor = 'https://solididentity.example#me'
 
 export const sendNotification = async ({
   subject,
   actor = defaultActor,
+  action = 'add',
 }: {
   subject: Uri
   actor?: Uri
+  action?: 'add' | 'remove'
 }) => {
   return await request(app)
     .post('/inbox')
@@ -23,7 +25,7 @@ export const sendNotification = async ({
     .send({
       '@context': 'https://www.w3.org/ns/activitystreams',
       '@id': '',
-      '@type': 'Announce',
+      '@type': action === 'remove' ? 'Remove' : 'Announce',
       actor,
       object: subject,
     })
